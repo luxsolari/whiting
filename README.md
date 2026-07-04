@@ -1,47 +1,63 @@
-# Changelog Releases Assistant
+# Whiting
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A Claude Code plugin that wires a repo's `CHANGELOG.md` up to its GitHub
-Releases. Push a version tag, get a Release — body pulled straight from the
-matching changelog section. No manual release-notes writing.
+A Claude Code plugin that bootstraps a repo's whole release discipline:
+init the repo, enforce Conventional Commits, derive semver bumps from
+commit history, and publish GitHub Releases straight from `CHANGELOG.md`.
+Named after Charlie Whiting, F1's longtime Race Director — famous for
+strictly enforcing the rulebook.
 
 ## What it does
 
-- Adds `.github/workflows/release.yml`: publishes a GitHub Release on every
-  `v*.*.*` tag push, using the matching `## [X.Y.Z]` section of
-  `CHANGELOG.md` as the body. Supports `workflow_dispatch` (with a `tag`
-  input) to backfill Releases for tags that already exist.
-- Adds `scripts/extract_changelog.py`: pulls a single version's section out
-  of a Keep a Changelog-formatted `CHANGELOG.md`.
-- Checks for existing release automation and changelog conventions before
-  touching anything — see [`skills/changelog-releases-assistant/SKILL.md`](skills/changelog-releases-assistant/SKILL.md)
-  for the full decision process.
+Four focused skills, one per lifecycle stage:
 
-This repo dogfoods itself: `.github/workflows/release.yml` and
-`scripts/extract_changelog.py` here are the exact files the skill copies
-into target repos.
+- **`inspect`** — audits an existing repo against these conventions
+  (changelog format, tag scheme, existing automation, commit style,
+  hook activation, AGENTS.md/CLAUDE.md, branch protection) and reports a
+  concrete remediation plan. Read-only, never writes.
+- **`repo-init`** — bootstraps the baseline: `git init` if needed,
+  `LICENSE`, `README.md`, and a Keep a Changelog `CHANGELOG.md`.
+- **`commit-conventions`** — installs a `commit-msg` hook (Conventional
+  Commits) and a `pre-push` hook (blocks direct pushes to the default
+  branch), and generates `AGENTS.md` (the rules) with `CLAUDE.md`
+  importing it.
+- **`semver-release`** — suggests the next version from commits since the
+  last tag, and publishes a GitHub Release from the matching
+  `CHANGELOG.md` section whenever that tag is pushed.
 
 ## Requirements
 
-- A `CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
-  (`## [X.Y.Z] — YYYY-MM-DD` section headers).
-- Git tags in `v*.*.*` form (e.g. `v0.7.3`). A different scheme works too,
-  but the workflow's tag glob and the script's version parsing need a
-  matching tweak — the skill checks for this.
+- A repo with (or being bootstrapped to have) a `CHANGELOG.md` following
+  [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and tags in
+  `v*.*.*` form. `inspect` and `repo-init` help you get there.
+- `gh` CLI, authenticated, for anything that touches GitHub (Releases,
+  reading the default branch, license text lookup).
 
 ## Install
 
 ```
 /plugin marketplace add luxsolari/lux-solari-plugins
-/plugin install changelog-releases-assistant@lux-solari-plugins
+/plugin install whiting@lux-solari-plugins
 ```
 
-Then, in any repo with a changelog and tags:
+Then, in any repo:
 
 ```
-Set up GitHub release automation from our changelog.
+Audit this repo against whiting's conventions.
 ```
+
+or, starting fresh:
+
+```
+Bootstrap this repo with whiting.
+```
+
+## This repo dogfoods itself
+
+`scripts/`, `.github/workflows/release.yml`, `AGENTS.md`, and `CLAUDE.md`
+here are exactly what the skills above install elsewhere — including this
+repo's own commit-msg/pre-push hooks and its own releases.
 
 ## License
 
