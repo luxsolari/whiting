@@ -16,12 +16,17 @@ Allowed types: `feat` `fix` `docs` `style` `refactor` `perf` `test` `build`
 `ci` `chore` `revert`. `scope` is optional. A `!` before the colon, or a
 `BREAKING CHANGE:` footer in the body, marks a breaking change.
 
-This is enforced locally by a `commit-msg` hook. After cloning, activate it
-once with:
+This is enforced locally by a `commit-msg` hook, and direct pushes to
+`{{DEFAULT_BRANCH}}` are blocked by a `pre-push` hook (see below). After
+cloning, activate both once with:
 
 ```
 git config core.hooksPath scripts/hooks
+git config whiting.defaultbranch {{DEFAULT_BRANCH}}
 ```
+
+Both settings are local, unversioned git config — every clone needs to run
+this once; it isn't inherited from the remote.
 
 ## Semver-bump discipline
 
