@@ -1,5 +1,6 @@
 # Whiting
 
+[![Version](https://img.shields.io/github/v/release/luxsolari/whiting)](https://github.com/luxsolari/whiting/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A Claude Code plugin that bootstraps a repo's whole release discipline:
