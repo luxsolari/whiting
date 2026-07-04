@@ -1,14 +1,14 @@
 {
-  "name": "changelog-releases-assistant",
-  "displayName": "Changelog Releases Assistant",
-  "version": "0.1.0",
-  "description": "Sets up GitHub Release automation driven by CHANGELOG.md: publishes a Release whenever a version tag is pushed, using the matching changelog section as the release body. Detects existing automation before touching anything.",
+  "name": "whiting",
+  "displayName": "Whiting",
+  "version": "0.2.0",
+  "description": "Bootstraps a repo's release discipline end to end: repo init, Conventional Commits enforcement, semver-driven version bumps, and CHANGELOG-driven GitHub Releases — plus an inspect skill to audit and retrofit existing repos.",
   "author": {
     "name": "Lux Solari",
     "email": "luxsolari@outlook.com"
   },
-  "homepage": "https://github.com/luxsolari/changelog-releases-assistant",
-  "repository": "https://github.com/luxsolari/changelog-releases-assistant",
+  "homepage": "https://github.com/luxsolari/whiting",
+  "repository": "https://github.com/luxsolari/whiting",
   "license": "MIT",
-  "keywords": ["github-releases", "changelog", "keep-a-changelog", "ci", "automation", "semver"]
+  "keywords": ["github-releases", "changelog", "keep-a-changelog", "conventional-commits", "semver", "repo-init", "git-hooks", "agents-md", "automation"]
 }

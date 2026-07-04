@@ -7,6 +7,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [Unreleased]
+
+### Added
+- `inspect` skill: read-only audit of an existing repo against whiting's conventions (changelog format, tag scheme, existing release automation, commit style, hook activation, AGENTS.md/CLAUDE.md, branch protection), with a concrete remediation plan pointing at `repo-init`, `commit-conventions`, or `semver-release`.
+- `repo-init` skill: bootstraps `LICENSE`, `README.md`, and a Keep a Changelog `CHANGELOG.md`, including `git init` for from-scratch repos.
+- `commit-conventions` skill: installs a `commit-msg` hook enforcing Conventional Commits and a `pre-push` hook blocking direct pushes to the default branch (both via a tracked `scripts/hooks/` directory activated with `core.hooksPath`), and generates `AGENTS.md` (with `CLAUDE.md` importing it) documenting commit format, semver-bump discipline, changelog-first workflow, and the no-direct-push rule.
+- `scripts/suggest_version_bump.py`: classifies commits since the last tag by Conventional Commit type/breaking-change footer and suggests the next semver version.
+- `scripts/render_template.py`: generic `{{KEY}}` placeholder substitution used by `repo-init` and `commit-conventions` to render their bundled templates.
+
+### Changed
+- Renamed the plugin and its GitHub repo from `changelog-releases-assistant` to **whiting**; `changelog-releases-assistant`'s skill is renamed `semver-release` and extended with the bump-suggestion flow above. Clean-break rename, no compatibility alias.
+
 ## [0.1.0] — 2026-07-04
 
 ### Added
