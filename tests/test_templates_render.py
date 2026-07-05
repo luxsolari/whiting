@@ -16,9 +16,21 @@ class TestTemplatesRender(unittest.TestCase):
 
     def test_readme_template_renders_with_project_fields(self):
         text = (TEMPLATES / "README.md.tmpl").read_text()
-        result = render(text, {"PROJECT_NAME": "demo", "DESCRIPTION": "A demo project."})
+        result = render(
+            text,
+            {
+                "PROJECT_NAME": "demo",
+                "DESCRIPTION": "A demo project.",
+                "REPO_SLUG": "acme/demo",
+                "LICENSE_NAME": "MIT",
+            },
+        )
         self.assertIn("# demo", result)
         self.assertIn("A demo project.", result)
+        self.assertIn("https://img.shields.io/github/v/release/acme/demo", result)
+        self.assertIn("https://github.com/acme/demo/releases", result)
+        self.assertIn("license-MIT-blue.svg", result)
+        self.assertNotIn("{{", result)
 
     def test_license_template_renders_with_year_and_author(self):
         text = (TEMPLATES / "LICENSE-MIT.tmpl").read_text()

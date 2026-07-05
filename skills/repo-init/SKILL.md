@@ -41,23 +41,57 @@ python3 $CLAUDE_PLUGIN_ROOT/scripts/render_template.py \
 | Missing file | Template | Placeholders |
 | --- | --- | --- |
 | `CHANGELOG.md` | `templates/CHANGELOG.md.tmpl` | none |
-| `README.md` | `templates/README.md.tmpl` | `PROJECT_NAME`, `DESCRIPTION` |
+| `README.md` | `templates/README.md.tmpl` | `PROJECT_NAME`, `DESCRIPTION`, `REPO_SLUG`, `LICENSE_NAME` |
 | `LICENSE` (MIT) | `templates/LICENSE-MIT.tmpl` | `YEAR`, `AUTHOR` |
 
 For `README.md`, ask the user for the project name and a one-line
-description before rendering:
+description. Derive `REPO_SLUG` (`owner/repo`) from the remote —
+`git remote get-url origin`, taking the `owner/repo` out of the SSH or
+HTTPS GitHub URL; if there is no remote yet, ask the user for it. Set `LICENSE_NAME` to the shields-escaped license id. For `MIT` it is
+just `MIT`; for any other license do not hand-escape — run the id
+through the helper so the badge label is always correct:
+
+    LICENSE_NAME=$(python3 $CLAUDE_PLUGIN_ROOT/scripts/shields_escape.py "Apache-2.0")  # -> Apache--2.0
+
+Then render:
 
 ```
 python3 $CLAUDE_PLUGIN_ROOT/scripts/render_template.py \
   $CLAUDE_PLUGIN_ROOT/templates/README.md.tmpl \
-  PROJECT_NAME="my-project" DESCRIPTION="What it does, one line." > README.md
+  PROJECT_NAME="my-project" DESCRIPTION="What it does, one line." \
+  REPO_SLUG="owner/my-project" LICENSE_NAME="MIT" > README.md
 ```
+
+The Version badge shows "no releases" until the first tag is pushed —
+the expected state for a new repo, and it self-populates once
+`semver-release` cuts a release.
 
 For `LICENSE`, ask which license (default MIT). If MIT, render
 `LICENSE-MIT.tmpl` with the current year and the user's name. For any
 other license, fetch the canonical text instead of guessing:
 `gh api "licenses/<spdx-id>" --jq .body > LICENSE` (e.g. `apache-2.0`,
 `gpl-3.0`).
+
+## Set GitHub description and topics
+
+Once the repo has a GitHub remote, give its project page an identity.
+Only do this if a remote exists **and** `gh` is authenticated
+(`git remote get-url origin` succeeds and `gh auth status` succeeds);
+otherwise skip it and tell the user they can run it later, printing the
+command below for them.
+
+Reuse the one-line description already collected for the README as the
+GitHub description, and ask the user for a short list of topics
+(space-separated, lowercase, hyphenated — e.g. `claude-code cli automation`):
+
+```
+gh repo edit "owner/repo" \
+  --description "What it does, one line." \
+  --add-topic topic-one --add-topic topic-two
+```
+
+Never fail the skill if this step can't run — it is additive polish on
+top of the committed files.
 
 ## Land the change
 

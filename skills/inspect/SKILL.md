@@ -45,6 +45,10 @@ It checks, read-only:
 - Whether `AGENTS.md` exists and `CLAUDE.md` imports it.
 - GitHub branch protection on the default branch (best-effort; skipped
   if `gh` isn't authenticated).
+- Whether `README.md` carries shields.io badges (Version/License).
+- Whether the GitHub repo has a description set (best-effort; skipped if
+  `gh` isn't authenticated or there's no origin remote).
+- Whether the GitHub repo has topics set (same best-effort gating).
 
 Each line is marked ✅ (compliant), ⚠️ (missing/adjustable), or ❌
 (blocking problem — currently only "not a git repository").
@@ -62,6 +66,9 @@ run next:
 - No release-publishing automation and tags already exist → run
   `semver-release`, noting how many existing tags have no GitHub Release
   yet (candidates for backfill via `workflow_dispatch`).
+- Missing README badges, GitHub description, or topics → run `repo-init`
+  (it renders badges into the README and sets description/topics via
+  `gh repo edit`).
 
 ## Scope notes
 

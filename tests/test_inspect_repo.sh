@@ -26,7 +26,8 @@ workdir=$(mktemp -d)
     git init -q
     git config user.email t@example.com
     git config user.name Test
-    touch LICENSE README.md
+    touch LICENSE
+    printf '# demo\n\n[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)\n' > README.md
     printf '# Changelog\n\n## [0.1.0] - 2026-01-01\n' > CHANGELOG.md
     mkdir -p scripts/hooks
     git config whiting.defaultbranch main
@@ -40,6 +41,7 @@ printf '%s\n' "$out" | grep -q "LICENSE present" || { echo "FAIL: expected LICEN
 printf '%s\n' "$out" | grep -q "CHANGELOG.md present and Keep a Changelog-formatted" || { echo "FAIL: expected CHANGELOG ok"; fail=1; }
 printf '%s\n' "$out" | grep -q 'tags follow v\*\.\*\.\* scheme' || { echo "FAIL: expected tag scheme ok"; fail=1; }
 printf '%s\n' "$out" | grep -q "core.hooksPath set to scripts/hooks" || { echo "FAIL: expected hooksPath ok"; fail=1; }
+printf '%s\n' "$out" | grep -q "README.md has shields.io badges" || { echo "FAIL: expected badge check ok"; fail=1; }
 rm -rf "$workdir"
 
 if [ "$fail" -eq 0 ]; then

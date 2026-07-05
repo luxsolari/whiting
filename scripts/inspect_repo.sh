@@ -79,16 +79,42 @@ else
     report_warn "AGENTS.md missing"
 fi
 
+if [ -f README.md ]; then
+    if grep -q 'img\.shields\.io' README.md; then
+        report_ok "README.md has shields.io badges"
+    else
+        report_warn "README.md has no shields.io badges"
+    fi
+fi
+
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
     origin_url=$(git config --get remote.origin.url || true)
     repo_slug=$(printf '%s' "$origin_url" | sed -E 's#.*[:/]([^/]+/[^/]+)(\.git)?$#\1#')
+
     if [ -n "$repo_slug" ] && gh api "repos/$repo_slug/branches/$default_branch/protection" >/dev/null 2>&1; then
         report_ok "GitHub branch protection enabled on '$default_branch'"
     else
         report_warn "GitHub branch protection not detected on '$default_branch' (or gh lacks admin read access)"
     fi
+
+    if [ -n "$repo_slug" ]; then
+        description=$(gh repo view "$repo_slug" --json description -q '.description // ""' 2>/dev/null || true)
+        if [ -n "$description" ]; then
+            report_ok "GitHub repo description set"
+        else
+            report_warn "GitHub repo description not set"
+        fi
+        topic_count=$(gh repo view "$repo_slug" --json repositoryTopics -q '.repositoryTopics | length' 2>/dev/null || echo 0)
+        if [ "${topic_count:-0}" -gt 0 ]; then
+            report_ok "GitHub repo topics set ($topic_count)"
+        else
+            report_warn "GitHub repo topics not set"
+        fi
+    else
+        report_warn "no origin remote — skipped GitHub description/topics check"
+    fi
 else
-    report_warn "gh not authenticated — skipped branch protection check"
+    report_warn "gh not authenticated — skipped branch protection and metadata checks"
 fi
 
 printf '\n%d ok, %d warnings, %d failed\n' "$pass" "$warn" "$fail"
