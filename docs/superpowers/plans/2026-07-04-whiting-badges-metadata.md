@@ -341,6 +341,152 @@ git commit -m "docs: changelog for badges and repo metadata"
 
 ---
 
+### Task 5: Robust shields.io escaping helper
+
+**Files:**
+- Create: `scripts/shields_escape.py`
+- Test: `tests/test_shields_escape.py`
+- Modify: `skills/repo-init/SKILL.md` (rewire `LICENSE_NAME` derivation to run the helper)
+- Modify: `CHANGELOG.md` (note the helper under the existing `## [Unreleased]` entry)
+
+**Interfaces:**
+- Produces: `shields_escape(label: str) -> str` in `scripts/shields_escape.py`, and a CLI `python3 scripts/shields_escape.py "<label>"` that prints the escaped label with no trailing newline. `repo-init` (doc) calls the CLI to compute `LICENSE_NAME`.
+- Rationale: `render_template.py` stays a generic literal substitutor; shields label escaping is a property of the value, computed before substitution — not renderer logic.
+
+- [ ] **Step 1: Write the failing test**
+
+Create `tests/test_shields_escape.py`:
+
+```python
+import subprocess
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+from shields_escape import shields_escape  # noqa: E402
+
+
+class TestShieldsEscape(unittest.TestCase):
+    def test_no_special_chars_unchanged(self):
+        self.assertEqual(shields_escape("MIT"), "MIT")
+
+    def test_single_hyphen_doubled(self):
+        self.assertEqual(shields_escape("Apache-2.0"), "Apache--2.0")
+
+    def test_multiple_hyphens_each_doubled(self):
+        self.assertEqual(shields_escape("BSD-3-Clause"), "BSD--3--Clause")
+
+    def test_underscore_doubled(self):
+        self.assertEqual(shields_escape("a_b"), "a__b")
+
+    def test_space_becomes_underscore(self):
+        self.assertEqual(shields_escape("GNU GPL"), "GNU_GPL")
+
+    def test_cli_outputs_escaped_without_trailing_newline(self):
+        result = subprocess.run(
+            [sys.executable, "scripts/shields_escape.py", "Apache-2.0"],
+            cwd=Path(__file__).parent.parent,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "Apache--2.0")
+
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+- [ ] **Step 2: Run the test to verify it fails**
+
+Run: `python3 -m unittest tests.test_shields_escape -v`
+Expected: FAIL — `ModuleNotFoundError: No module named 'shields_escape'`.
+
+- [ ] **Step 3: Write the helper**
+
+Create `scripts/shields_escape.py`:
+
+```python
+#!/usr/bin/env python3
+"""Escape a label for a shields.io static badge.
+
+shields treats '-', '_' and space specially in the label/message segments:
+a literal '-' is written '--', a literal '_' is written '__', and a space
+is written '_'. SPDX license ids (e.g. Apache-2.0, BSD-3-Clause) need this
+so their hyphens survive into the badge.
+"""
+import sys
+
+
+def shields_escape(label):
+    return label.replace("_", "__").replace("-", "--").replace(" ", "_")
+
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: shields_escape.py <label>", file=sys.stderr)
+        return 1
+    print(shields_escape(sys.argv[1]), end="")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+Make it executable: `chmod +x scripts/shields_escape.py`.
+
+- [ ] **Step 4: Run the test to verify it passes**
+
+Run: `python3 -m unittest tests.test_shields_escape -v`
+Expected: PASS (6 tests).
+
+- [ ] **Step 5: Rewire repo-init to run the helper**
+
+In `skills/repo-init/SKILL.md`, replace the sentence:
+
+```
+Set
+`LICENSE_NAME` to the license id (`MIT` by default; for another license
+use its SPDX id with hyphens doubled for the shields badge, e.g.
+`Apache--2.0`). Then render:
+```
+
+with:
+
+```
+Set `LICENSE_NAME` to the shields-escaped license id. For `MIT` it is
+just `MIT`; for any other license do not hand-escape — run the id
+through the helper so the badge label is always correct:
+
+    LICENSE_NAME=$(python3 $CLAUDE_PLUGIN_ROOT/scripts/shields_escape.py "Apache-2.0")  # -> Apache--2.0
+
+Then render:
+```
+
+Leave the render code block and the "no releases" caveat that follow unchanged.
+
+- [ ] **Step 6: Note the helper in the changelog**
+
+In `CHANGELOG.md`, under the existing `## [Unreleased]` → `### Added` block, append one bullet:
+
+```markdown
+- `scripts/shields_escape.py` escapes the license id for the shields badge, so non-MIT SPDX ids (e.g. `Apache-2.0` → `Apache--2.0`) render correctly; `repo-init` runs it to compute `LICENSE_NAME`.
+```
+
+- [ ] **Step 7: Run the full suite and commit**
+
+Run: `sh scripts/run_tests.sh`
+Expected: `All tests passed.` (now including `test_shields_escape.py`).
+
+```bash
+git add scripts/shields_escape.py tests/test_shields_escape.py skills/repo-init/SKILL.md CHANGELOG.md
+git commit -m "feat(repo-init): add shields_escape helper for license badge ids"
+```
+
+---
+
 ## Landing & release (after all tasks, human-gated)
 
 These steps are outward-facing and run once, after the tasks above:
