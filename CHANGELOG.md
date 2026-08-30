@@ -9,11 +9,13 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-08-30
+
 ### Added
-- `semver-release` runs `claude plugin tag --dry-run` in plugin repos as
-  part of the release commit, so a `plugin.json` version that disagrees
-  with its enclosing `marketplace.json` entry is caught before the tag
-  goes out. Skipped where the `claude` CLI isn't available.
+- `semver-release` runs `claude plugin tag --dry-run` in plugin repos,
+  right after the release commit, so a `plugin.json` version that
+  disagrees with its enclosing `marketplace.json` entry is caught before
+  the tag goes out. Skipped where the `claude` CLI isn't available.
 
 ## [0.4.0] — 2026-08-30
 
@@ -85,6 +87,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `scripts/extract_changelog.py`: extracts a single version's section from a Keep a Changelog-formatted `CHANGELOG.md`, stripping the trailing reference-link line and `---` separator, for use as release notes.
 - This repo dogfoods its own automation: the workflow and script above are the exact files the skill copies into target repos.
 
+[0.5.0]: https://github.com/luxsolari/whiting/releases/tag/v0.5.0
 [0.4.0]: https://github.com/luxsolari/whiting/releases/tag/v0.4.0
 [0.3.0]: https://github.com/luxsolari/whiting/releases/tag/v0.3.0
 [0.2.0]: https://github.com/luxsolari/whiting/releases/tag/v0.2.0
