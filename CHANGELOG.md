@@ -9,6 +9,8 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-08-30
+
 ### Added
 - `AGENTS.md` now ships the working-agreement defaults on top of the
   release rules — register, answer scope, disagreement, language, and a
@@ -37,7 +39,6 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `commit-conventions` and `repo-init` merge into an existing
   `AGENTS.md`/`CLAUDE.md` instead of asking to overwrite: existing
   content is left exactly as written.
-
 - `semver-release` now sets the version in the repo's manifests
   (`plugin.json`, `package.json`, `pyproject.toml`) as part of the release
   commit, and checks the manifest against the last tag before cutting a new
@@ -78,6 +79,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `scripts/extract_changelog.py`: extracts a single version's section from a Keep a Changelog-formatted `CHANGELOG.md`, stripping the trailing reference-link line and `---` separator, for use as release notes.
 - This repo dogfoods its own automation: the workflow and script above are the exact files the skill copies into target repos.
 
+[0.4.0]: https://github.com/luxsolari/whiting/releases/tag/v0.4.0
 [0.3.0]: https://github.com/luxsolari/whiting/releases/tag/v0.3.0
 [0.2.0]: https://github.com/luxsolari/whiting/releases/tag/v0.2.0
 [0.1.0]: https://github.com/luxsolari/changelog-releases-assistant/releases/tag/v0.1.0
