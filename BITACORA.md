@@ -10,6 +10,29 @@ line each — never dropping a decision or a recorded failure.
 
 ---
 
+## 2026-08-30 — release v0.5.0 prepared; step ordering corrected
+
+- **Changed**: `CHANGELOG.md`'s `## [Unreleased]` renamed to
+  `## [0.5.0] — 2026-08-30` with a fresh `## [Unreleased]` and a `[0.5.0]`
+  link; `.claude-plugin/plugin.json` `0.4.0` → `0.5.0`. Also moved the
+  `claude plugin tag --dry-run` step from 4 to 6 in
+  `skills/semver-release/SKILL.md`.
+- **Verified**: `suggest_version_bump.py` reads two commits since `v0.4.0`,
+  one a `feat:`, and suggests `v0.5.0`; pre-flight manifest check passed
+  (`plugin.json` 0.4.0 = tag v0.4.0).
+- **Recorded failure (found by using it)**: the step as shipped in #11 said
+  to run the check *before* committing. It refuses on a dirty tree —
+  `× Uncommitted changes affecting this release — commit them first so the
+  tag points at the version you intend to release` — so it can only run
+  after the release commit exists. Caught on the very first real use, one
+  release after being written. The lesson is the obvious one: a command
+  written into a skill from `--help` output alone is not verified; run it
+  in the position the skill puts it in.
+- **Open**: the tag, once this lands (see the v0.4.0 entry for why the
+  push has to go through `release.yml`'s `workflow_dispatch`).
+- **Files**: `CHANGELOG.md`, `.claude-plugin/plugin.json`,
+  `skills/semver-release/SKILL.md`.
+
 ## 2026-08-30 — semver-release checks the plugin/marketplace version pair
 
 - **Changed**: `skills/semver-release/SKILL.md` step 4 now runs
