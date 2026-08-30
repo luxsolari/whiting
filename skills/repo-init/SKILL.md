@@ -2,7 +2,8 @@
 name: repo-init
 description: >-
   Bootstrap a repo's baseline — git init if needed, LICENSE, README.md
-  skeleton, and a Keep a Changelog-formatted CHANGELOG.md — whether
+  skeleton, a Keep a Changelog-formatted CHANGELOG.md, and the agent
+  rule files (AGENTS.md, CLAUDE.md importing it, BITACORA.md) — whether
   starting from an empty directory or filling gaps in an existing repo.
   Use when the user wants to start a new project properly or is missing
   one of these files. Never overwrites an existing file without asking.
@@ -12,7 +13,9 @@ license: MIT
 # repo-init
 
 Bootstraps the baseline every other whiting skill assumes is there: a git
-repo, a LICENSE, a README, and a Keep a Changelog `CHANGELOG.md`.
+repo, a LICENSE, a README, a Keep a Changelog `CHANGELOG.md`, and the
+agent rule files — `AGENTS.md`, a `CLAUDE.md` that imports it, and the
+`BITACORA.md` work log those rules refer to.
 
 ## When to use this skill
 
@@ -24,9 +27,13 @@ repo, a LICENSE, a README, and a Keep a Changelog `CHANGELOG.md`.
 
 1. Run `git rev-parse --is-inside-work-tree`. If it fails, this is a
    from-scratch bootstrap — run `git init` before anything else.
-2. Check for existing `LICENSE`, `README.md`, `CHANGELOG.md`. For each one
-   that already exists, report it and ask before touching it — never
-   overwrite silently. Skip files the user says to leave alone.
+2. Check for existing `LICENSE`, `README.md`, `CHANGELOG.md`,
+   `AGENTS.md`, `CLAUDE.md`, `BITACORA.md`. For each one that already
+   exists, report it and ask before touching it — never overwrite
+   silently. Skip files the user says to leave alone.
+   `AGENTS.md` and `CLAUDE.md` are the exception to "ask, then skip":
+   when they already exist they get *merged*, not replaced (see below),
+   so nothing the repo already says is lost.
 
 ## What to install
 
@@ -43,6 +50,30 @@ python3 $CLAUDE_PLUGIN_ROOT/scripts/render_template.py \
 | `CHANGELOG.md` | `templates/CHANGELOG.md.tmpl` | none |
 | `README.md` | `templates/README.md.tmpl` | `PROJECT_NAME`, `DESCRIPTION`, `REPO_SLUG`, `LICENSE_NAME` |
 | `LICENSE` (MIT) | `templates/LICENSE-MIT.tmpl` | `YEAR`, `AUTHOR` |
+| `AGENTS.md` | `templates/AGENTS.md.tmpl` | `DEFAULT_BRANCH` |
+| `CLAUDE.md` | `templates/CLAUDE.md.tmpl` | none |
+| `BITACORA.md` | `templates/BITACORA.md.tmpl` | `DATE` |
+
+For the three agent files, follow the same procedure `commit-conventions`
+uses — it owns them:
+
+- `AGENTS.md`: render `AGENTS.md.tmpl` with the repo's default branch
+  (`gh repo view --json defaultBranchRef --jq .defaultBranchRef.name`,
+  falling back to `main`). If the file already exists, merge instead of
+  overwriting, so only the missing sections are appended:
+
+  ```
+  python3 $CLAUDE_PLUGIN_ROOT/scripts/merge_agents_md.py \
+    AGENTS.md /tmp/whiting-agents.md --report   # then, to apply, drop --report
+  ```
+
+- `CLAUDE.md`: create it as the single line `@AGENTS.md`; if it exists
+  and doesn't already reference `AGENTS.md`, prepend that line and leave
+  the rest alone.
+- `BITACORA.md`: render with `DATE="$(date +%F)"`, only if missing.
+
+See `commit-conventions` for the full merge walkthrough, including how
+headings are matched.
 
 For `README.md`, ask the user for the project name and a one-line
 description. Derive `REPO_SLUG` (`owner/repo`) from the remote —
@@ -106,7 +137,7 @@ straight to the default branch.
 
 ## Next steps
 
-After this, run `commit-conventions` to install the commit-message hook
-and generate `AGENTS.md`/`CLAUDE.md`, then `semver-release` to wire up
-release automation. `inspect` can tell you if either is already partially
+After this, run `commit-conventions` to install the commit-message and
+pre-push hooks that the rules in `AGENTS.md` refer to, then
+`semver-release` to wire up release automation. `inspect` can tell you if either is already partially
 in place.

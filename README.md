@@ -24,14 +24,32 @@ Four focused skills, one per lifecycle stage:
 
 - **`inspect`** — audits an existing repo against these conventions
   (changelog format, tag scheme, existing automation, commit style,
-  hook activation, AGENTS.md/CLAUDE.md, branch protection) and reports a
-  concrete remediation plan. Read-only, never writes.
+  hook activation, AGENTS.md/CLAUDE.md/BITACORA.md, branch protection)
+  and reports a concrete remediation plan. Read-only, never writes.
 - **`repo-init`** — bootstraps the baseline: `git init` if needed,
-  `LICENSE`, `README.md`, and a Keep a Changelog `CHANGELOG.md`.
+  `LICENSE`, `README.md`, a Keep a Changelog `CHANGELOG.md`, and the
+  agent rule files below.
 - **`commit-conventions`** — installs a `commit-msg` hook (Conventional
   Commits) and a `pre-push` hook (blocks direct pushes to the default
   branch), and generates `AGENTS.md` (the rules) with `CLAUDE.md`
   importing it.
+
+### The agent rule files
+
+`AGENTS.md` is the single copy of the rules; `CLAUDE.md` is one line,
+`@AGENTS.md`, so Claude Code, Codex, Cursor and anything else that reads
+`AGENTS.md` work from the same file. It carries two groups of rules: the
+working-agreement defaults every repo gets — register, answer scope,
+disagreement, language, and a `BITACORA.md` work log agents read before
+starting and append to when they finish — and this repo's release
+discipline (commit format, semver bumps, changelog-first, no direct
+pushes).
+
+If the repo already has an `AGENTS.md` or `CLAUDE.md`, whiting **merges
+instead of replacing**: existing content is left exactly as written, and
+only the sections the file is missing get appended
+(`scripts/merge_agents_md.py`, with a `--report` mode that shows what
+would change before anything is written).
 - **`semver-release`** — suggests the next version from commits since the
   last tag, and publishes a GitHub Release from the matching
   `CHANGELOG.md` section whenever that tag is pushed.

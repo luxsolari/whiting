@@ -42,6 +42,29 @@ class TestTemplatesRender(unittest.TestCase):
         text = (TEMPLATES / "AGENTS.md.tmpl").read_text()
         result = render(text, {"DEFAULT_BRANCH": "main"})
         self.assertIn("No direct pushes to main", result)
+        self.assertNotIn("{{", result)
+
+    def test_agents_template_carries_the_working_agreement_defaults(self):
+        text = (TEMPLATES / "AGENTS.md.tmpl").read_text()
+        result = render(text, {"DEFAULT_BRANCH": "main"})
+        for heading in (
+            "## Register",
+            "## Answer scope",
+            "## Disagreement",
+            "## Language",
+            "## Work log",
+            "## Conventional Commits",
+            "## Semver-bump discipline",
+            "## Changelog-first workflow",
+        ):
+            self.assertIn(heading, result)
+        self.assertIn("BITACORA.md", result)
+
+    def test_bitacora_template_renders_with_date(self):
+        text = (TEMPLATES / "BITACORA.md.tmpl").read_text()
+        result = render(text, {"DATE": "2026-07-05"})
+        self.assertIn("# Bit\u00e1cora", result)
+        self.assertIn("2026-07-05", result)
 
     def test_claude_template_imports_agents(self):
         text = (TEMPLATES / "CLAUDE.md.tmpl").read_text()

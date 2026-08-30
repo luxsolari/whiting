@@ -3,7 +3,7 @@ name: inspect
 description: >-
   Audit an existing repo against whiting's conventions (Keep a Changelog,
   Conventional Commits, semver tags, GitHub Release automation, AGENTS.md/
-  CLAUDE.md) and produce a compliance report plus a remediation plan. Use
+  CLAUDE.md/BITACORA.md) and produce a compliance report plus a remediation plan. Use
   when the user wants to know what's missing or non-conforming before
   running repo-init, commit-conventions, or semver-release on a repo that
   wasn't bootstrapped by whiting from scratch. Read-only — makes no changes.
@@ -36,13 +36,23 @@ It checks, read-only:
 - Git repo present, and the resolved default branch.
 - `LICENSE`, `README.md`, `CHANGELOG.md` presence and format.
 - Tag scheme (`v*.*.*` or otherwise).
+- Whether a version-carrying manifest (`.claude-plugin/plugin.json`,
+  `package.json`, `pyproject.toml`) still matches the last tag — a
+  mismatch means an earlier release never wrote the version back, which
+  `semver-release` now does as part of the release commit. The version is
+  read by `scripts/manifest_version.py`, which takes only the manifest's
+  own version — never one nested under `dependencies`. Skipped when the
+  repo has no tags yet.
 - Existing release-publishing automation (to avoid recommending a
   competing workflow).
 - Whether `core.hooksPath` is already wired to `scripts/hooks`.
 - What fraction of the last 20 commits already follow Conventional
   Commits (tells you how disruptive turning on the `commit-msg` hook
   will be).
-- Whether `AGENTS.md` exists and `CLAUDE.md` imports it.
+- Whether `AGENTS.md` exists and `CLAUDE.md` imports it, and whether
+  `AGENTS.md` covers the working-agreement defaults (register, answer
+  scope, disagreement, language, work log).
+- Whether the `BITACORA.md` work log exists.
 - GitHub branch protection on the default branch (best-effort; skipped
   if `gh` isn't authenticated).
 - Whether `README.md` carries shields.io badges (Version/License).

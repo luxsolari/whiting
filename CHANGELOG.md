@@ -9,6 +9,44 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- `AGENTS.md` now ships the working-agreement defaults on top of the
+  release rules — register, answer scope, disagreement, language, and a
+  `BITACORA.md` work log agents read before starting and append to when
+  they finish — plus a closing note on the three-axes-framework plugin
+  that can be dropped when it isn't in use.
+- `repo-init` creates `AGENTS.md`, `CLAUDE.md` (importing it) and
+  `BITACORA.md` as part of the baseline, from the new
+  `templates/BITACORA.md.tmpl`; they are no longer only a
+  `commit-conventions` side effect.
+- `scripts/merge_agents_md.py`: merges whiting's rules into an existing
+  `AGENTS.md` by appending only the sections it lacks, matching headings
+  on their first four normalized words so a repo's own
+  "No direct pushes to develop" is not duplicated. `--report` shows what
+  would change before anything is written.
+- `inspect` reports whether `AGENTS.md` covers the working-agreement
+  sections and whether `BITACORA.md` exists, and flags a manifest version
+  (`plugin.json`, `package.json`, `pyproject.toml`) that has drifted from
+  the last tag.
+- `scripts/manifest_version.py`: reads a manifest's own declared version —
+  parsing JSON as JSON and TOML with `tomllib` (with a table-scoped regex
+  fallback for Python < 3.11), so a `version` nested under `dependencies`
+  is never mistaken for it. Used by `inspect`'s drift check.
+
+### Changed
+- `commit-conventions` and `repo-init` merge into an existing
+  `AGENTS.md`/`CLAUDE.md` instead of asking to overwrite: existing
+  content is left exactly as written.
+
+- `semver-release` now sets the version in the repo's manifests
+  (`plugin.json`, `package.json`, `pyproject.toml`) as part of the release
+  commit, and checks the manifest against the last tag before cutting a new
+  release — the step whose absence let this repo's `plugin.json` drift.
+
+### Fixed
+- `.claude-plugin/plugin.json` said `0.2.0` while the last release was
+  `0.3.0`; the manifest version now matches the tag.
+
 ## [0.3.0] — 2026-07-05
 
 ### Added

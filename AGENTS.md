@@ -4,6 +4,58 @@ This repo uses [whiting](https://github.com/luxsolari/whiting) for release
 discipline. The following rules apply to human contributors and AI agents
 alike.
 
+This file is the source of truth. `CLAUDE.md` is a one-line import of it,
+so Claude Code, Codex, Cursor, and anything else that reads `AGENTS.md`
+all get the same rules from one place. Edit this file, never the copy.
+
+A rule stated here beats a general habit; where this file and a user-level
+config disagree, this file wins for work done in this repo.
+
+## Register
+
+Direct, concise, to the point. The tone to aim for is a veteran guild leader
+talking to someone they want to see succeed: pragmatic, assertive, invested —
+not a cheerleader and not a subordinate. Skip excessive informality. Skip the
+preamble about what you are about to do.
+
+## Answer scope
+
+Answer what was asked, and stop. If there is adjacent detail worth knowing,
+say in one line that it exists and offer it — do not append it unbidden. A
+reply that is three-quarters unrequested context is harder to use than a
+short one.
+
+## Disagreement
+
+Do not agree automatically. When the reasoning is sound, say so plainly and
+move on. When it is not — an inconsistency, an unstated assumption, a claim
+worth checking — say that instead, before building on it. Go verify things
+yourself rather than asking for confirmation of what you could look up.
+
+If you say a mechanism, a setting, or a UI control exists, know that it
+does. Repeating what an error message suggests is not knowing.
+
+## Language
+
+Plain language over jargon, in both explanation and written material. When
+writing in Spanish, write in Spanish — do not mix English technical terms in
+where a Spanish word exists. Consistency within a document matters more than
+using the term you would use in conversation.
+
+## Work log
+
+After completing a task, append an entry to `BITACORA.md` at the repo root:
+what changed, what was verified and how, what is still open, what was ruled
+out and why, and the files that matter. Newest first.
+
+Read it before starting work. It exists so you do not rebuild context that an
+earlier session already established, and so you do not re-walk a dead end
+somebody already mapped.
+
+Compact it past ~40 entries: fold all but the most recent 15 into a historical
+summary, one line each. Never drop a decision or a recorded failure — drop
+routine detail instead.
+
 ## Conventional Commits
 
 Every commit subject line must follow:
@@ -30,10 +82,11 @@ this once; it isn't inherited from the remote.
 
 ## Semver-bump discipline
 
-Version numbers are never hand-edited. The next version is derived from
+Version numbers are never guessed. The next version is derived from
 commits since the last tag via `scripts/suggest_version_bump.py` (`feat` →
 minor, `fix` → patch, breaking → major). Git tags are the source of truth
-for "what version is this."
+for "what version is this"; any manifest that carries a version copies
+the derived number in the release commit, so it never drifts from the tag.
 
 ## Changelog-first workflow
 
@@ -45,3 +98,16 @@ undocumented changes.
 
 Land changes via a branch and a pull request. Direct pushes to
 `main` are blocked locally by a `pre-push` hook.
+
+## Relationship to the Three Axes Framework
+
+If the [three-axes-framework](https://github.com/luxsolari/lux-solari-plugins)
+plugin is active in this session, it injects the six principles and the
+thirteen Integrity Rules (IR-01 … IR-13) at session start, so they are
+deliberately not repeated here — duplicating them would cost context on every
+session and give two sources of truth for the same rules. `/three-axes-status`
+shows whether it is active.
+
+This file covers what that plugin does not: register, answer scope, language,
+the work-log convention, and this repo's release discipline. If the plugin is
+not in use, drop this section — the rules above stand on their own.

@@ -35,7 +35,12 @@ since the last tag, so version bumps aren't guessed by hand.
    sections headed `## [X.Y.Z] — YYYY-MM-DD` (a regex on `^## \[VERSION\]`
    must match). If there's no changelog, or its format doesn't match, this
    skill needs `repo-init` run first — don't guess a format.
-3. **Check the tag scheme**: `git tag -l` should show tags like `v0.1.0`.
+3. **Check the manifest version against the last tag.** If the repo has a
+   `plugin.json`, `package.json`, or `pyproject.toml`, compare its
+   version to `git describe --tags --abbrev=0`. A mismatch means an
+   earlier release skipped step 4 below; say so and offer to correct it
+   before cutting anything new.
+4. **Check the tag scheme**: `git tag -l` should show tags like `v0.1.0`.
    If tags use a different prefix or omit `v`, this skill's workflow's
    `on.push.tags` glob, `scripts/extract_changelog.py`, and
    `scripts/suggest_version_bump.py`'s `v`-prefix handling all need the
@@ -76,11 +81,26 @@ already exists), and needs no secrets beyond the default `GITHUB_TOKEN`
 3. On confirmation: in `CHANGELOG.md`, rename `## [Unreleased]` to
    `## [X.Y.Z] — YYYY-MM-DD` (today's date) and add a fresh empty
    `## [Unreleased]` above it.
-4. Commit that: `git commit -m "chore(release): vX.Y.Z"`.
-5. Land the commit per this repo's normal rules (branch + PR if
+4. Set the confirmed version in every manifest that carries one, in this
+   same commit — the tag is the source of truth, and a manifest left
+   behind silently advertises a stale version:
+
+   | Repo kind | File | Field |
+   | --- | --- | --- |
+   | Claude Code plugin | `.claude-plugin/plugin.json` | `version` |
+   | Node | `package.json` (and its lockfile, via the package manager) | `version` |
+   | Python | `pyproject.toml` | `project.version` |
+
+   Find any others with `grep -rn '"version"\|^version' --include=*.json \
+   --include=*.toml --include=*.cfg .` before committing, skipping
+   dependency versions and generated files. This is the one place a
+   version number gets written by hand — it copies the number the bump
+   suggester derived, never a guess.
+5. Commit both: `git commit -m "chore(release): vX.Y.Z"`.
+6. Land the commit per this repo's normal rules (branch + PR if
    `commit-conventions` is installed — don't push the release commit
    straight to the default branch either).
-6. After the release commit reaches the default branch, tag it and push
+7. After the release commit reaches the default branch, tag it and push
    the tag: `git tag vX.Y.Z && git push origin vX.Y.Z`. This triggers the
    installed workflow, which publishes the GitHub Release.
 

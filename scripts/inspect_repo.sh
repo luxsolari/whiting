@@ -47,6 +47,30 @@ else
     report_warn "tags exist but don't match v*.*.* (found: $(printf '%s' "$tag_sample" | head -n1))"
 fi
 
+# Manifest version vs. the last tag: a mismatch means a release commit
+# renamed the changelog but never wrote the version back into the manifest.
+# manifest_version.py reads only the manifest's own version, so a `version`
+# nested under dependencies can't be mistaken for it.
+last_tag=$(git describe --tags --abbrev=0 2>/dev/null || true)
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+for manifest in .claude-plugin/plugin.json package.json pyproject.toml; do
+    [ -f "$manifest" ] || continue
+    # No tags yet is the normal state for a fresh repo — nothing to compare.
+    [ -n "$last_tag" ] || continue
+    if ! command -v python3 >/dev/null 2>&1; then
+        report_warn "python3 not available — skipped the $manifest version check"
+        continue
+    fi
+    declared=$(python3 "$script_dir/manifest_version.py" "$manifest" 2>/dev/null || true)
+    if [ -z "$declared" ]; then
+        report_warn "$manifest declares no version of its own (or isn't parseable)"
+    elif [ "$declared" = "${last_tag#v}" ]; then
+        report_ok "$manifest version $declared matches the last tag $last_tag"
+    else
+        report_warn "$manifest says version $declared but the last tag is $last_tag (a release skipped the manifest bump)"
+    fi
+done
+
 if [ -d .github/workflows ] && grep -rl -E 'gh release|softprops/action-gh-release|actions/create-release' .github/workflows 2>/dev/null | grep -q .; then
     report_warn "existing release-publishing workflow found — check before adding another"
 else
@@ -75,8 +99,24 @@ if [ -f AGENTS.md ]; then
     else
         report_warn "AGENTS.md present but CLAUDE.md doesn't import it"
     fi
+
+    missing_sections=""
+    for section in Register "Answer scope" Disagreement Language "Work log"; do
+        grep -qi "^## $section" AGENTS.md || missing_sections="$missing_sections, $section"
+    done
+    if [ -z "$missing_sections" ]; then
+        report_ok "AGENTS.md covers the working-agreement defaults"
+    else
+        report_warn "AGENTS.md missing working-agreement sections:${missing_sections#,}"
+    fi
 else
     report_warn "AGENTS.md missing"
+fi
+
+if [ -f BITACORA.md ]; then
+    report_ok "BITACORA.md work log present"
+else
+    report_warn "BITACORA.md missing (AGENTS.md's work-log rule has nothing to append to)"
 fi
 
 if [ -f README.md ]; then
