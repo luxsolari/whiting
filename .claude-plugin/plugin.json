@@ -1,7 +1,7 @@
 {
   "name": "whiting",
   "displayName": "Whiting",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Bootstraps a repo's release discipline end to end: repo init, Conventional Commits enforcement, semver-driven version bumps, and CHANGELOG-driven GitHub Releases — plus an inspect skill to audit and retrofit existing repos.",
   "author": {
     "name": "Lux Solari",

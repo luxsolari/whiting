@@ -32,6 +32,10 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `AGENTS.md`/`CLAUDE.md` instead of asking to overwrite: existing
   content is left exactly as written.
 
+### Fixed
+- `.claude-plugin/plugin.json` said `0.2.0` while the last release was
+  `0.3.0`; the manifest version now matches the tag.
+
 ## [0.3.0] — 2026-07-05
 
 ### Added

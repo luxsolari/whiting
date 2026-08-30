@@ -26,8 +26,10 @@ line each — never dropping a decision or a recorded failure.
   repo whose `AGENTS.md` only has release rules. This repo's own
   `AGENTS.md` was regenerated from the template and re-checked with
   `merge_agents_md.py --report` — all sections present.
-- **Open**: `.claude-plugin/plugin.json` still says `0.2.0` while the last
-  release was `0.3.0`; unrelated to this change, left alone.
+- **Open**: nothing. (`.claude-plugin/plugin.json` said `0.2.0` while the
+  last release was `0.3.0`; corrected to `0.3.0` in this same branch.
+  Nothing automates that file — `semver-release` doesn't touch it — so it
+  will drift again at the next release unless the skill starts bumping it.)
 - **Ruled out**: an interactive three-way merge for existing `AGENTS.md`
   files — heading-level section matching (first four normalized words, so
   "No direct pushes to develop" matches the template's "…to main") is
