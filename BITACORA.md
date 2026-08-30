@@ -10,6 +10,38 @@ line each — never dropping a decision or a recorded failure.
 
 ---
 
+## 2026-08-30 — v0.5.0 released; both marketplaces serve it
+
+- **Changed**: nothing here beyond this log. `v0.5.0` is tagged at
+  `bc3f401` with its Release published from the `## [0.5.0]` section. The
+  Codex port carries the same release: its `semver-release` gained an
+  equivalent step 6 and its manifest went `0.4.0` → `0.5.0`.
+- **Verified**: `git ls-remote --tags` shows `v0.5.0` → `bc3f401`; the
+  Release body matches `extract_changelog.py v0.5.0`. Both marketplaces
+  read `0.5.0` at their published paths — `.claude-plugin/plugin.json` on
+  this repo's default branch (what `lux-solari-plugins` resolves, since
+  its entry pins no version) and `plugins/whiting/.codex-plugin/plugin.json`
+  in `lux-solari-codex-plugins`. Codex CI green on both `validate` runs.
+- **Open**: nothing in either repo. Merged branches are piling up on both
+  remotes because this session cannot delete them (below); clear them from
+  the PR pages or a local clone.
+- **Ruled out / recorded failure (widens the v0.4.0 entry)**: the sandbox
+  refuses *every* ref write except pushing commits to a branch. Tag pushes
+  fail, and so does `git push origin --delete <branch>` — same
+  `send-pack: unexpected disconnect`, on both repos, not a flake. The
+  GitHub MCP server here has `create_branch` but no delete, and there is
+  no generic API call tool, so from a remote session branch cleanup is the
+  user's to do: the PR page's **Delete branch** button, a local clone, or
+  *Settings → General → Automatically delete head branches*.
+- **Codex divergence worth keeping**: a Codex `marketplace.json` entry has
+  no `version` — it resolves by path and reads `.codex-plugin/plugin.json`
+  — so upstream's `claude plugin tag` version-pair check has no
+  counterpart. That port's step 6 re-validates the manifest with the
+  marketplace repo's own `scripts/validate_plugin.py` instead, and says
+  why. Do not "fix" the divergence by copying the upstream text.
+- **Files**: `BITACORA.md` here; `plugins/whiting/**`,
+  `tests/test_parity_inventory.py`, `docs/parity-inventory.md` there.
+
 ## 2026-08-30 — release v0.5.0 prepared; step ordering corrected
 
 - **Changed**: `CHANGELOG.md`'s `## [Unreleased]` renamed to
@@ -28,8 +60,7 @@ line each — never dropping a decision or a recorded failure.
   release after being written. The lesson is the obvious one: a command
   written into a skill from `--help` output alone is not verified; run it
   in the position the skill puts it in.
-- **Open**: the tag, once this lands (see the v0.4.0 entry for why the
-  push has to go through `release.yml`'s `workflow_dispatch`).
+- **Open**: nothing. Tagged and released; see the entry above.
 - **Files**: `CHANGELOG.md`, `.claude-plugin/plugin.json`,
   `skills/semver-release/SKILL.md`.
 
