@@ -25,7 +25,9 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   "No direct pushes to develop" is not duplicated. `--report` shows what
   would change before anything is written.
 - `inspect` reports whether `AGENTS.md` covers the working-agreement
-  sections and whether `BITACORA.md` exists.
+  sections and whether `BITACORA.md` exists, and flags a manifest version
+  (`plugin.json`, `package.json`, `pyproject.toml`) that has drifted from
+  the last tag.
 
 ### Changed
 - `commit-conventions` and `repo-init` merge into an existing

@@ -67,6 +67,42 @@ printf '%s\n' "$out" | grep -q "AGENTS.md missing working-agreement sections" ||
 printf '%s\n' "$out" | grep -q "BITACORA.md missing" || { echo "FAIL: expected BITACORA missing warning"; fail=1; }
 rm -rf "$workdir"
 
+# Case 5: manifest version drifted from the last tag
+workdir=$(mktemp -d)
+(
+    cd "$workdir"
+    git init -q
+    git config user.email t@example.com
+    git config user.name Test
+    mkdir -p .claude-plugin
+    printf '{\n  "name": "demo",\n  "version": "0.2.0"\n}\n' > .claude-plugin/plugin.json
+    git add -A
+    git commit -q -m "chore: init"
+    git tag v0.3.0
+)
+out=$(cd "$workdir" && "$script") || true
+printf '%s\n' "$out" | grep -q "says version 0.2.0 but the last tag is v0.3.0" || { echo "FAIL: expected manifest drift warning"; fail=1; }
+rm -rf "$workdir"
+
+# Case 6: manifest version matches the last tag, and an untagged repo is silent
+workdir=$(mktemp -d)
+(
+    cd "$workdir"
+    git init -q
+    git config user.email t@example.com
+    git config user.name Test
+    printf '{\n  "name": "demo",\n  "version": "0.3.0"\n}\n' > package.json
+    git add -A
+    git commit -q -m "chore: init"
+)
+out=$(cd "$workdir" && "$script") || true
+printf '%s\n' "$out" | grep -q "version 0.3.0 matches the last tag" && { echo "FAIL: untagged repo should not report a manifest match"; fail=1; }
+printf '%s\n' "$out" | grep -q "package.json says version" && { echo "FAIL: untagged repo should not warn about drift"; fail=1; }
+(cd "$workdir" && git tag v0.3.0)
+out=$(cd "$workdir" && "$script") || true
+printf '%s\n' "$out" | grep -q "package.json version 0.3.0 matches the last tag v0.3.0" || { echo "FAIL: expected manifest match"; fail=1; }
+rm -rf "$workdir"
+
 if [ "$fail" -eq 0 ]; then
     echo "All inspect_repo.sh tests passed."
 else

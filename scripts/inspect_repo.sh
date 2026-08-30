@@ -47,6 +47,29 @@ else
     report_warn "tags exist but don't match v*.*.* (found: $(printf '%s' "$tag_sample" | head -n1))"
 fi
 
+# Manifest version vs. the last tag: a mismatch means a release commit
+# renamed the changelog but never wrote the version back into the manifest.
+manifest_version() {
+    case "$1" in
+        *.json) sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$1" | head -n 1 ;;
+        *.toml) sed -n 's/^version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$1" | head -n 1 ;;
+    esac
+}
+
+last_tag=$(git describe --tags --abbrev=0 2>/dev/null || true)
+for manifest in .claude-plugin/plugin.json package.json pyproject.toml; do
+    [ -f "$manifest" ] || continue
+    declared=$(manifest_version "$manifest")
+    [ -n "$declared" ] || continue
+    # No tags yet is the normal state for a fresh repo — nothing to compare.
+    [ -n "$last_tag" ] || continue
+    if [ "$declared" = "${last_tag#v}" ]; then
+        report_ok "$manifest version $declared matches the last tag $last_tag"
+    else
+        report_warn "$manifest says version $declared but the last tag is $last_tag (a release skipped the manifest bump)"
+    fi
+done
+
 if [ -d .github/workflows ] && grep -rl -E 'gh release|softprops/action-gh-release|actions/create-release' .github/workflows 2>/dev/null | grep -q .; then
     report_warn "existing release-publishing workflow found — check before adding another"
 else

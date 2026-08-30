@@ -30,7 +30,9 @@ line each — never dropping a decision or a recorded failure.
   last release was `0.3.0`; corrected to `0.3.0` in this same branch.
   Root cause: nothing wrote it. `semver-release` now sets manifest
   versions in the release commit and checks the manifest against the last
-  tag before cutting a release, so it should not drift again.)
+  tag before cutting a release, and `inspect` flags the drift in repos
+  that never cut a release through the skill, so it should not drift
+  again.)
 - **Ruled out**: an interactive three-way merge for existing `AGENTS.md`
   files — heading-level section matching (first four normalized words, so
   "No direct pushes to develop" matches the template's "…to main") is

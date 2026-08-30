@@ -36,6 +36,11 @@ It checks, read-only:
 - Git repo present, and the resolved default branch.
 - `LICENSE`, `README.md`, `CHANGELOG.md` presence and format.
 - Tag scheme (`v*.*.*` or otherwise).
+- Whether a version-carrying manifest (`.claude-plugin/plugin.json`,
+  `package.json`, `pyproject.toml`) still matches the last tag — a
+  mismatch means an earlier release never wrote the version back, which
+  `semver-release` now does as part of the release commit. Skipped when
+  the repo has no tags yet.
 - Existing release-publishing automation (to avoid recommending a
   competing workflow).
 - Whether `core.hooksPath` is already wired to `scripts/hooks`.
