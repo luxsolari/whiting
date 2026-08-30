@@ -28,6 +28,10 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   sections and whether `BITACORA.md` exists, and flags a manifest version
   (`plugin.json`, `package.json`, `pyproject.toml`) that has drifted from
   the last tag.
+- `scripts/manifest_version.py`: reads a manifest's own declared version —
+  parsing JSON as JSON and TOML with `tomllib` (with a table-scoped regex
+  fallback for Python < 3.11), so a `version` nested under `dependencies`
+  is never mistaken for it. Used by `inspect`'s drift check.
 
 ### Changed
 - `commit-conventions` and `repo-init` merge into an existing

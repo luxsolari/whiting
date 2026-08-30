@@ -49,21 +49,22 @@ fi
 
 # Manifest version vs. the last tag: a mismatch means a release commit
 # renamed the changelog but never wrote the version back into the manifest.
-manifest_version() {
-    case "$1" in
-        *.json) sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$1" | head -n 1 ;;
-        *.toml) sed -n 's/^version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$1" | head -n 1 ;;
-    esac
-}
-
+# manifest_version.py reads only the manifest's own version, so a `version`
+# nested under dependencies can't be mistaken for it.
 last_tag=$(git describe --tags --abbrev=0 2>/dev/null || true)
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 for manifest in .claude-plugin/plugin.json package.json pyproject.toml; do
     [ -f "$manifest" ] || continue
-    declared=$(manifest_version "$manifest")
-    [ -n "$declared" ] || continue
     # No tags yet is the normal state for a fresh repo — nothing to compare.
     [ -n "$last_tag" ] || continue
-    if [ "$declared" = "${last_tag#v}" ]; then
+    if ! command -v python3 >/dev/null 2>&1; then
+        report_warn "python3 not available — skipped the $manifest version check"
+        continue
+    fi
+    declared=$(python3 "$script_dir/manifest_version.py" "$manifest" 2>/dev/null || true)
+    if [ -z "$declared" ]; then
+        report_warn "$manifest declares no version of its own (or isn't parseable)"
+    elif [ "$declared" = "${last_tag#v}" ]; then
         report_ok "$manifest version $declared matches the last tag $last_tag"
     else
         report_warn "$manifest says version $declared but the last tag is $last_tag (a release skipped the manifest bump)"

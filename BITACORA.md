@@ -39,6 +39,11 @@ line each — never dropping a decision or a recorded failure.
   predictable and never rewrites a line the repo already had. Near-duplicate
   sections under unrecognised headings are surfaced to the user instead of
   auto-reconciled.
+- **Note**: `inspect`'s manifest check parses via
+  `scripts/manifest_version.py` rather than `sed` — the first `"version"`
+  key in a JSON file is not reliably the manifest's own. TOML uses
+  `tomllib` where available, falling back to a regex scoped to `[project]`
+  / `[tool.poetry]`.
 - **Files**: `templates/AGENTS.md.tmpl`, `templates/BITACORA.md.tmpl`,
   `scripts/merge_agents_md.py`, `skills/repo-init/SKILL.md`,
   `skills/commit-conventions/SKILL.md`, `skills/inspect/SKILL.md`,

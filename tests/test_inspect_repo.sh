@@ -103,6 +103,22 @@ out=$(cd "$workdir" && "$script") || true
 printf '%s\n' "$out" | grep -q "package.json version 0.3.0 matches the last tag v0.3.0" || { echo "FAIL: expected manifest match"; fail=1; }
 rm -rf "$workdir"
 
+# Case 7: a version nested under dependencies is not the manifest's own
+workdir=$(mktemp -d)
+(
+    cd "$workdir"
+    git init -q
+    git config user.email t@example.com
+    git config user.name Test
+    printf '{\n  "dependencies": {\n    "left-pad": {\n      "version": "9.9.9"\n    }\n  },\n  "version": "0.3.0"\n}\n' > package.json
+    git add -A
+    git commit -q -m "chore: init"
+    git tag v0.3.0
+)
+out=$(cd "$workdir" && "$script") || true
+printf '%s\n' "$out" | grep -q "package.json version 0.3.0 matches the last tag v0.3.0" || { echo "FAIL: expected the manifest's own version, not a dependency's"; fail=1; }
+rm -rf "$workdir"
+
 if [ "$fail" -eq 0 ]; then
     echo "All inspect_repo.sh tests passed."
 else

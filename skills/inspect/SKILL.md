@@ -39,8 +39,10 @@ It checks, read-only:
 - Whether a version-carrying manifest (`.claude-plugin/plugin.json`,
   `package.json`, `pyproject.toml`) still matches the last tag — a
   mismatch means an earlier release never wrote the version back, which
-  `semver-release` now does as part of the release commit. Skipped when
-  the repo has no tags yet.
+  `semver-release` now does as part of the release commit. The version is
+  read by `scripts/manifest_version.py`, which takes only the manifest's
+  own version — never one nested under `dependencies`. Skipped when the
+  repo has no tags yet.
 - Existing release-publishing automation (to avoid recommending a
   competing workflow).
 - Whether `core.hooksPath` is already wired to `scripts/hooks`.
