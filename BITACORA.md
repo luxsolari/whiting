@@ -10,6 +10,32 @@ line each — never dropping a decision or a recorded failure.
 
 ---
 
+## 2026-08-30 — semver-release checks the plugin/marketplace version pair
+
+- **Changed**: `skills/semver-release/SKILL.md` step 4 now runs
+  `claude plugin tag --dry-run <path>` in plugin repos, and the pre-flight
+  check points at it for the marketplace half of the drift.
+- **Verified**: ran the command for real, not from memory. Against this
+  repo it prints `Version: 0.4.0 (from plugin.json)` / `Tag:
+  whiting--v0.4.0` and exits 0. Against a scratch marketplace fixture
+  whose `plugin.json` said `0.2.0` and whose `marketplace.json` entry said
+  `0.1.0`, it exits 1 with `× Version mismatch: ... plugin.json wins at
+  install time`.
+- **Open**: nothing.
+- **Ruled out**: dropping `--dry-run`. The command creates
+  `{name}--v{version}` tags (`whiting--v0.4.0`), a different scheme from
+  the `v*.*.*` tags `release.yml` triggers on — using it to cut releases
+  would silently stop publishing them. It is a validator here, nothing
+  more. Also not ported to the Codex copy of this skill: `claude plugin`
+  is Claude Code's CLI, and that repo validates with its own
+  `scripts/validate_plugin.py`.
+- **Context**: found because the Claude marketplace card still showed
+  whiting at `0.2.0`. That turned out to be a stale local cache
+  (`claude plugin marketplace update lux-solari-plugins`), not a bad
+  manifest — the marketplace entry pins no version and reads `plugin.json`
+  from the default branch, which is `0.4.0`.
+- **Files**: `skills/semver-release/SKILL.md`, `CHANGELOG.md`.
+
 ## 2026-08-30 — v0.4.0 released; Codex port brought to parity
 
 - **Changed**: nothing in this repo beyond this log. `v0.4.0` is tagged at

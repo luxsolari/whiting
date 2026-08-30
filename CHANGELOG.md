@@ -9,6 +9,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- `semver-release` runs `claude plugin tag --dry-run` in plugin repos as
+  part of the release commit, so a `plugin.json` version that disagrees
+  with its enclosing `marketplace.json` entry is caught before the tag
+  goes out. Skipped where the `claude` CLI isn't available.
+
 ## [0.4.0] — 2026-08-30
 
 ### Added
