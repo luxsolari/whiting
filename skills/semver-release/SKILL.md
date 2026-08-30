@@ -39,7 +39,9 @@ since the last tag, so version bumps aren't guessed by hand.
    `plugin.json`, `package.json`, or `pyproject.toml`, compare its
    version to `git describe --tags --abbrev=0`. A mismatch means an
    earlier release skipped step 4 below; say so and offer to correct it
-   before cutting anything new.
+   before cutting anything new. In a plugin repo,
+   `claude plugin tag --dry-run` (step 4) catches the marketplace half of
+   the same drift.
 4. **Check the tag scheme**: `git tag -l` should show tags like `v0.1.0`.
    If tags use a different prefix or omit `v`, this skill's workflow's
    `on.push.tags` glob, `scripts/extract_changelog.py`, and
@@ -96,6 +98,31 @@ already exists), and needs no secrets beyond the default `GITHUB_TOKEN`
    dependency versions and generated files. This is the one place a
    version number gets written by hand — it copies the number the bump
    suggester derived, never a guess.
+
+   **Plugin repos**: the Claude Code CLI checks this for you. Run it
+   before committing, from the repo root, with the plugin's path:
+
+   ```
+   claude plugin tag --dry-run .            # or: claude plugin tag --dry-run plugins/<name>
+   ```
+
+   It reads the version out of `plugin.json` and, when the plugin sits
+   inside a marketplace repo, compares it to that plugin's
+   `.claude-plugin/marketplace.json` entry. Agreement prints what it
+   would tag and exits 0; a mismatch exits 1 and names both sides:
+
+   ```
+   × Version mismatch: plugin.json says "0.2.0" but
+     .claude-plugin/marketplace.json plugins[0].version says "0.1.0".
+     plugin.json wins at install time, so update the marketplace entry
+     to "0.2.0" (or remove it) before tagging.
+   ```
+
+   Keep `--dry-run` on: without it the command creates a
+   `{name}--v{version}` tag, which is a *different* scheme from the
+   `v*.*.*` release tag this skill's workflow triggers on, and is not a
+   substitute for it. Skip this step where the `claude` CLI isn't
+   available — it's a check, not a dependency.
 5. Commit both: `git commit -m "chore(release): vX.Y.Z"`.
 6. Land the commit per this repo's normal rules (branch + PR if
    `commit-conventions` is installed — don't push the release commit
