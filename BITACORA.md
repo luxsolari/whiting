@@ -10,6 +10,27 @@ line each — never dropping a decision or a recorded failure.
 
 ---
 
+## 2026-08-30 — release v0.4.0 prepared
+
+- **Changed**: `CHANGELOG.md`'s `## [Unreleased]` renamed to
+  `## [0.4.0] — 2026-08-30` with a fresh empty `## [Unreleased]` above it
+  and a `[0.4.0]` reference link added; `.claude-plugin/plugin.json`
+  bumped `0.3.0` → `0.4.0` in the same commit, which is `semver-release`'s
+  new step 4 running for the first time. Also tidied a stray blank line
+  that split the `### Changed` list.
+- **Verified**: `suggest_version_bump.py` reads one `feat:` commit since
+  `v0.3.0` and suggests `v0.4.0`; `extract_changelog.py v0.4.0` returns
+  the full section, so the release workflow has a body to publish.
+  Pre-flight manifest check passed before the bump (`plugin.json` 0.3.0 =
+  tag v0.3.0).
+- **Open**: the tag. `git tag v0.4.0 && git push origin v0.4.0` only after
+  this release commit reaches `main` — that push is what triggers
+  `.github/workflows/release.yml` and publishes the GitHub Release.
+- **Ruled out**: tagging from the branch. The workflow reads
+  `CHANGELOG.md` at the tagged commit, and a tag on an unmerged branch
+  would publish a release pointing at history that isn't on `main`.
+- **Files**: `CHANGELOG.md`, `.claude-plugin/plugin.json`.
+
 ## 2026-08-30 — agent rule files: working-agreement defaults + merge-not-replace
 
 - **Changed**: `templates/AGENTS.md.tmpl` now carries the working-agreement
