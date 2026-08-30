@@ -75,8 +75,24 @@ if [ -f AGENTS.md ]; then
     else
         report_warn "AGENTS.md present but CLAUDE.md doesn't import it"
     fi
+
+    missing_sections=""
+    for section in Register "Answer scope" Disagreement Language "Work log"; do
+        grep -qi "^## $section" AGENTS.md || missing_sections="$missing_sections, $section"
+    done
+    if [ -z "$missing_sections" ]; then
+        report_ok "AGENTS.md covers the working-agreement defaults"
+    else
+        report_warn "AGENTS.md missing working-agreement sections:${missing_sections#,}"
+    fi
 else
     report_warn "AGENTS.md missing"
+fi
+
+if [ -f BITACORA.md ]; then
+    report_ok "BITACORA.md work log present"
+else
+    report_warn "BITACORA.md missing (AGENTS.md's work-log rule has nothing to append to)"
 fi
 
 if [ -f README.md ]; then

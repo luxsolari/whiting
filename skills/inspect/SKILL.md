@@ -3,7 +3,7 @@ name: inspect
 description: >-
   Audit an existing repo against whiting's conventions (Keep a Changelog,
   Conventional Commits, semver tags, GitHub Release automation, AGENTS.md/
-  CLAUDE.md) and produce a compliance report plus a remediation plan. Use
+  CLAUDE.md/BITACORA.md) and produce a compliance report plus a remediation plan. Use
   when the user wants to know what's missing or non-conforming before
   running repo-init, commit-conventions, or semver-release on a repo that
   wasn't bootstrapped by whiting from scratch. Read-only — makes no changes.
@@ -42,7 +42,10 @@ It checks, read-only:
 - What fraction of the last 20 commits already follow Conventional
   Commits (tells you how disruptive turning on the `commit-msg` hook
   will be).
-- Whether `AGENTS.md` exists and `CLAUDE.md` imports it.
+- Whether `AGENTS.md` exists and `CLAUDE.md` imports it, and whether
+  `AGENTS.md` covers the working-agreement defaults (register, answer
+  scope, disagreement, language, work log).
+- Whether the `BITACORA.md` work log exists.
 - GitHub branch protection on the default branch (best-effort; skipped
   if `gh` isn't authenticated).
 - Whether `README.md` carries shields.io badges (Version/License).
