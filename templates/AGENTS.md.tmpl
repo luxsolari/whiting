@@ -82,10 +82,11 @@ this once; it isn't inherited from the remote.
 
 ## Semver-bump discipline
 
-Version numbers are never hand-edited. The next version is derived from
+Version numbers are never guessed. The next version is derived from
 commits since the last tag via `scripts/suggest_version_bump.py` (`feat` →
 minor, `fix` → patch, breaking → major). Git tags are the source of truth
-for "what version is this."
+for "what version is this"; any manifest that carries a version copies
+the derived number in the release commit, so it never drifts from the tag.
 
 ## Changelog-first workflow
 

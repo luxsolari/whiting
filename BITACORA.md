@@ -28,8 +28,9 @@ line each — never dropping a decision or a recorded failure.
   `merge_agents_md.py --report` — all sections present.
 - **Open**: nothing. (`.claude-plugin/plugin.json` said `0.2.0` while the
   last release was `0.3.0`; corrected to `0.3.0` in this same branch.
-  Nothing automates that file — `semver-release` doesn't touch it — so it
-  will drift again at the next release unless the skill starts bumping it.)
+  Root cause: nothing wrote it. `semver-release` now sets manifest
+  versions in the release commit and checks the manifest against the last
+  tag before cutting a release, so it should not drift again.)
 - **Ruled out**: an interactive three-way merge for existing `AGENTS.md`
   files — heading-level section matching (first four normalized words, so
   "No direct pushes to develop" matches the template's "…to main") is

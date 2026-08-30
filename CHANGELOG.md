@@ -32,6 +32,11 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `AGENTS.md`/`CLAUDE.md` instead of asking to overwrite: existing
   content is left exactly as written.
 
+- `semver-release` now sets the version in the repo's manifests
+  (`plugin.json`, `package.json`, `pyproject.toml`) as part of the release
+  commit, and checks the manifest against the last tag before cutting a new
+  release — the step whose absence let this repo's `plugin.json` drift.
+
 ### Fixed
 - `.claude-plugin/plugin.json` said `0.2.0` while the last release was
   `0.3.0`; the manifest version now matches the tag.
