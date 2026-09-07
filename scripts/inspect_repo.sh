@@ -113,10 +113,15 @@ else
     report_warn "AGENTS.md missing"
 fi
 
-if [ -f BITACORA.md ]; then
-    report_ok "BITACORA.md work log present"
+if [ -f JOURNAL.md ]; then
+    report_ok "JOURNAL.md work log present"
+elif [ -f BITACORA.md ]; then
+    # The log was called BITACORA.md before whiting 0.6.0. The repo has a work
+    # log; it is under the old name. Reporting it as missing would invite a
+    # second one alongside it.
+    report_warn "BITACORA.md found (pre-0.6.0 name) — rename it: git mv BITACORA.md JOURNAL.md"
 else
-    report_warn "BITACORA.md missing (AGENTS.md's work-log rule has nothing to append to)"
+    report_warn "JOURNAL.md missing (AGENTS.md's work-log rule has nothing to append to)"
 fi
 
 if [ -f README.md ]; then

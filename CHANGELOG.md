@@ -9,6 +9,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-09-07
+
+### Changed
+- The work log this plugin bootstraps is now `JOURNAL.md` with a `# Journal` heading,
+  renamed from `BITACORA.md` / `# Bitácora`. `templates/BITACORA.md.tmpl` became
+  `templates/JOURNAL.md.tmpl`; `repo-init`, `inspect`, `commit-conventions`, the rendered
+  `AGENTS.md` work-log rule, `scripts/inspect_repo.sh` and this repository's own log and
+  working agreement follow.
+- `inspect` and `scripts/inspect_repo.sh` now report an existing `BITACORA.md` as needing a
+  rename rather than as a missing work log, and `repo-init` renames it instead of rendering
+  a second one. A repo with two work logs is worse off than a repo with the old name.
+
 ## [0.5.0] — 2026-08-30
 
 ### Added

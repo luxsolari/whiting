@@ -31,7 +31,7 @@ workdir=$(mktemp -d)
     printf '# Changelog\n\n## [0.1.0] - 2026-01-01\n' > CHANGELOG.md
     printf '# Agent Rules\n\n## Register\n\n## Answer scope\n\n## Disagreement\n\n## Language\n\n## Work log\n' > AGENTS.md
     printf '@AGENTS.md\n' > CLAUDE.md
-    printf '# Bitacora\n' > BITACORA.md
+    printf '# Journal\n' > JOURNAL.md
     mkdir -p scripts/hooks
     git config whiting.defaultbranch main
     git config core.hooksPath scripts/hooks
@@ -47,7 +47,7 @@ printf '%s\n' "$out" | grep -q "core.hooksPath set to scripts/hooks" || { echo "
 printf '%s\n' "$out" | grep -q "README.md has shields.io badges" || { echo "FAIL: expected badge check ok"; fail=1; }
 printf '%s\n' "$out" | grep -q "AGENTS.md present and CLAUDE.md imports it" || { echo "FAIL: expected AGENTS/CLAUDE ok"; fail=1; }
 printf '%s\n' "$out" | grep -q "AGENTS.md covers the working-agreement defaults" || { echo "FAIL: expected working-agreement sections ok"; fail=1; }
-printf '%s\n' "$out" | grep -q "BITACORA.md work log present" || { echo "FAIL: expected BITACORA present"; fail=1; }
+printf '%s\n' "$out" | grep -q "JOURNAL.md work log present" || { echo "FAIL: expected JOURNAL present"; fail=1; }
 rm -rf "$workdir"
 
 # Case 4: AGENTS.md with only the release rules -> flags the missing defaults
@@ -64,7 +64,27 @@ workdir=$(mktemp -d)
 )
 out=$(cd "$workdir" && "$script") || true
 printf '%s\n' "$out" | grep -q "AGENTS.md missing working-agreement sections" || { echo "FAIL: expected missing working-agreement warning"; fail=1; }
-printf '%s\n' "$out" | grep -q "BITACORA.md missing" || { echo "FAIL: expected BITACORA missing warning"; fail=1; }
+printf '%s\n' "$out" | grep -q "JOURNAL.md missing" || { echo "FAIL: expected JOURNAL missing warning"; fail=1; }
+rm -rf "$workdir"
+
+# Case 4b: the work log is there under its pre-0.6.0 name -> flags the rename,
+# and must NOT report the log as missing. Reporting "missing" is what would
+# invite a second log alongside the one the repo already has.
+workdir=$(mktemp -d)
+(
+    cd "$workdir"
+    git init -q
+    git config user.email t@example.com
+    git config user.name Test
+    printf '# Agent Rules\n\n## Conventional Commits\n' > AGENTS.md
+    printf '@AGENTS.md\n' > CLAUDE.md
+    printf '# Bitacora\n' > BITACORA.md
+    git add -A
+    git commit -q -m "chore: init"
+)
+out=$(cd "$workdir" && "$script") || true
+printf '%s\n' "$out" | grep -q "BITACORA.md found (pre-0.6.0 name)" || { echo "FAIL: expected legacy work-log name warning"; fail=1; }
+printf '%s\n' "$out" | grep -q "JOURNAL.md missing" && { echo "FAIL: legacy log should not report JOURNAL.md missing"; fail=1; }
 rm -rf "$workdir"
 
 # Case 5: manifest version drifted from the last tag

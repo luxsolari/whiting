@@ -24,7 +24,7 @@ Four focused skills, one per lifecycle stage:
 
 - **`inspect`** — audits an existing repo against these conventions
   (changelog format, tag scheme, existing automation, commit style,
-  hook activation, AGENTS.md/CLAUDE.md/BITACORA.md, branch protection)
+  hook activation, AGENTS.md/CLAUDE.md/JOURNAL.md, branch protection)
   and reports a concrete remediation plan. Read-only, never writes.
 - **`repo-init`** — bootstraps the baseline: `git init` if needed,
   `LICENSE`, `README.md`, a Keep a Changelog `CHANGELOG.md`, and the
@@ -40,7 +40,7 @@ Four focused skills, one per lifecycle stage:
 `@AGENTS.md`, so Claude Code, Codex, Cursor and anything else that reads
 `AGENTS.md` work from the same file. It carries two groups of rules: the
 working-agreement defaults every repo gets — register, answer scope,
-disagreement, language, and a `BITACORA.md` work log agents read before
+disagreement, language, and a `JOURNAL.md` work log agents read before
 starting and append to when they finish — and this repo's release
 discipline (commit format, semver bumps, changelog-first, no direct
 pushes).

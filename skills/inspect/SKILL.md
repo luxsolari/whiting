@@ -3,7 +3,7 @@ name: inspect
 description: >-
   Audit an existing repo against whiting's conventions (Keep a Changelog,
   Conventional Commits, semver tags, GitHub Release automation, AGENTS.md/
-  CLAUDE.md/BITACORA.md) and produce a compliance report plus a remediation plan. Use
+  CLAUDE.md/JOURNAL.md) and produce a compliance report plus a remediation plan. Use
   when the user wants to know what's missing or non-conforming before
   running repo-init, commit-conventions, or semver-release on a repo that
   wasn't bootstrapped by whiting from scratch. Read-only — makes no changes.
@@ -52,7 +52,8 @@ It checks, read-only:
 - Whether `AGENTS.md` exists and `CLAUDE.md` imports it, and whether
   `AGENTS.md` covers the working-agreement defaults (register, answer
   scope, disagreement, language, work log).
-- Whether the `BITACORA.md` work log exists.
+- Whether the `JOURNAL.md` work log exists. A `BITACORA.md` is the pre-0.6.0
+  name for the same file: report it as needing a rename, not as missing.
 - GitHub branch protection on the default branch (best-effort; skipped
   if `gh` isn't authenticated).
 - Whether `README.md` carries shields.io badges (Version/License).

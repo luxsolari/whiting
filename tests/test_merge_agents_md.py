@@ -15,7 +15,7 @@ Be direct.
 
 ## Work log
 
-Append to BITACORA.md.
+Append to JOURNAL.md.
 
 ## No direct pushes to main
 
@@ -29,7 +29,7 @@ class TestMergeAgentsMd(unittest.TestCase):
         merged = merge(existing, TEMPLATE)
         self.assertIn("## Work log\n\nOur own log rule.", merged)
         self.assertEqual(merged.count("## Work log"), 1)
-        self.assertNotIn("Append to BITACORA.md.", merged)
+        self.assertNotIn("Append to JOURNAL.md.", merged)
         self.assertIn("## Register", merged)
         self.assertIn("## No direct pushes to main", merged)
 

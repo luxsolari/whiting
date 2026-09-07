@@ -44,7 +44,7 @@ using the term you would use in conversation.
 
 ## Work log
 
-After completing a task, append an entry to `BITACORA.md` at the repo root:
+After completing a task, append an entry to `JOURNAL.md` at the repo root:
 what changed, what was verified and how, what is still open, what was ruled
 out and why, and the files that matter. Newest first.
 

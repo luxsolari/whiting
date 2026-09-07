@@ -58,12 +58,12 @@ class TestTemplatesRender(unittest.TestCase):
             "## Changelog-first workflow",
         ):
             self.assertIn(heading, result)
-        self.assertIn("BITACORA.md", result)
+        self.assertIn("JOURNAL.md", result)
 
-    def test_bitacora_template_renders_with_date(self):
-        text = (TEMPLATES / "BITACORA.md.tmpl").read_text()
+    def test_journal_template_renders_with_date(self):
+        text = (TEMPLATES / "JOURNAL.md.tmpl").read_text()
         result = render(text, {"DATE": "2026-07-05"})
-        self.assertIn("# Bit\u00e1cora", result)
+        self.assertIn("# Journal", result)
         self.assertIn("2026-07-05", result)
 
     def test_claude_template_imports_agents(self):

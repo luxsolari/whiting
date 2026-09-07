@@ -4,7 +4,7 @@ description: >-
   Install Conventional Commits enforcement (a commit-msg hook) and a
   no-direct-push-to-main guard (a pre-push hook), plus generate AGENTS.md
   and CLAUDE.md rule files covering working-agreement defaults (register,
-  answer scope, disagreement, language, BITACORA.md work log) plus commit
+  answer scope, disagreement, language, JOURNAL.md work log) plus commit
   format, semver-bump discipline, changelog-first workflow, and branch
   protection policy — merging into existing files instead of replacing
   them. Use when the user wants commit conventions enforced or wants
@@ -111,13 +111,13 @@ contributors and AI agents working in the repo.
      move that repo's own instructions into `AGENTS.md` or delete them —
      the import is additive.
 
-6. Create `BITACORA.md` if it's missing — the work log the rule set
+6. Create `JOURNAL.md` if it's missing — the work log the rule set
    refers to:
 
    ```
    python3 $CLAUDE_PLUGIN_ROOT/scripts/render_template.py \
-     $CLAUDE_PLUGIN_ROOT/templates/BITACORA.md.tmpl \
-     DATE="$(date +%F)" > BITACORA.md
+     $CLAUDE_PLUGIN_ROOT/templates/JOURNAL.md.tmpl \
+     DATE="$(date +%F)" > JOURNAL.md
    ```
 
    If it already exists, leave it alone.
@@ -134,7 +134,7 @@ defaults every repo gets:
   asking the user to confirm what could be looked up.
 - **Language**: plain language over jargon; don't mix English technical
   terms into Spanish writing.
-- **Work log**: append to `BITACORA.md` after each task, read it before
+- **Work log**: append to `JOURNAL.md` after each task, read it before
   starting, compact it past ~40 entries.
 
 The second is this repo's release discipline:

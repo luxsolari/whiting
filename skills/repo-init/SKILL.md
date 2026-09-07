@@ -3,7 +3,7 @@ name: repo-init
 description: >-
   Bootstrap a repo's baseline — git init if needed, LICENSE, README.md
   skeleton, a Keep a Changelog-formatted CHANGELOG.md, and the agent
-  rule files (AGENTS.md, CLAUDE.md importing it, BITACORA.md) — whether
+  rule files (AGENTS.md, CLAUDE.md importing it, JOURNAL.md) — whether
   starting from an empty directory or filling gaps in an existing repo.
   Use when the user wants to start a new project properly or is missing
   one of these files. Never overwrites an existing file without asking.
@@ -15,7 +15,7 @@ license: MIT
 Bootstraps the baseline every other whiting skill assumes is there: a git
 repo, a LICENSE, a README, a Keep a Changelog `CHANGELOG.md`, and the
 agent rule files — `AGENTS.md`, a `CLAUDE.md` that imports it, and the
-`BITACORA.md` work log those rules refer to.
+`JOURNAL.md` work log those rules refer to.
 
 ## When to use this skill
 
@@ -28,7 +28,7 @@ agent rule files — `AGENTS.md`, a `CLAUDE.md` that imports it, and the
 1. Run `git rev-parse --is-inside-work-tree`. If it fails, this is a
    from-scratch bootstrap — run `git init` before anything else.
 2. Check for existing `LICENSE`, `README.md`, `CHANGELOG.md`,
-   `AGENTS.md`, `CLAUDE.md`, `BITACORA.md`. For each one that already
+   `AGENTS.md`, `CLAUDE.md`, `JOURNAL.md`. For each one that already
    exists, report it and ask before touching it — never overwrite
    silently. Skip files the user says to leave alone.
    `AGENTS.md` and `CLAUDE.md` are the exception to "ask, then skip":
@@ -52,7 +52,7 @@ python3 $CLAUDE_PLUGIN_ROOT/scripts/render_template.py \
 | `LICENSE` (MIT) | `templates/LICENSE-MIT.tmpl` | `YEAR`, `AUTHOR` |
 | `AGENTS.md` | `templates/AGENTS.md.tmpl` | `DEFAULT_BRANCH` |
 | `CLAUDE.md` | `templates/CLAUDE.md.tmpl` | none |
-| `BITACORA.md` | `templates/BITACORA.md.tmpl` | `DATE` |
+| `JOURNAL.md` | `templates/JOURNAL.md.tmpl` | `DATE` |
 
 For the three agent files, follow the same procedure `commit-conventions`
 uses — it owns them:
@@ -70,7 +70,10 @@ uses — it owns them:
 - `CLAUDE.md`: create it as the single line `@AGENTS.md`; if it exists
   and doesn't already reference `AGENTS.md`, prepend that line and leave
   the rest alone.
-- `BITACORA.md`: render with `DATE="$(date +%F)"`, only if missing.
+- `JOURNAL.md`: render with `DATE="$(date +%F)"`, only if missing. If a
+  `BITACORA.md` is present instead, it is the same log under its pre-0.6.0
+  name — rename it (`git mv BITACORA.md JOURNAL.md`) and render nothing.
+  Two work logs in one repo is worse than either name.
 
 See `commit-conventions` for the full merge walkthrough, including how
 headings are matched.

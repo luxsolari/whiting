@@ -1,4 +1,4 @@
-# Bitácora
+# Journal
 
 Work log for this repo. Newest entry first. Read it before starting work;
 append to it after finishing a task.
